@@ -1,0 +1,198 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ page import="com.connection.*"%>
+<%@ page import="java.sql.*"%>
+
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<title>Park Capsule</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet"
+href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+	<script src="https://kit.fontawesome.com/f38e05699a.js" crossorigin="anonymous"></script>
+<!-- <script type="text/javascript" src="https://cdn.jsdelivr.net/html5shiv/3.7.3/html5shiv.min.js"></script> -->
+
+</head>
+
+<body  style="background-image: url(images/vehicle5.jpg); background-size: 1350px;">							
+	<nav class="navbar navbar-expand-sm navbar-light"  style="background-color:#FF8C00">
+	 <div class="container-fluid">
+	 
+
+		<a class="navbar-brand mb-0 h1" href="index.jsp">
+		 <img src="images/logo16.png" alt="" width="70" height="50">Park Capsule</a>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="index.jsp"> <i class="fas fa-home fa-lg" style="color:black"></i>Home <span class="sr-only">(current)</span></a>
+      </li>
+		<li>
+		<li class="nav-item">
+        <a class="nav-link" href="about.jsp"><font color="black">About Us</font></a>
+      </li>
+		<li class="nav-item">
+        <a class="nav-link" href="contact.jsp"><font color="black">Contact Us</font></a>
+      </li>
+		<li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" style="color:black" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user fa-lg" style="color:black"></i><font color="black">Welcome,<%=session.getAttribute("uname")%></font>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" >
+          <a class="dropdown-item" href="user-profile.jsp">My Profile</a>
+          <a class="dropdown-item" href="change-user-password.jsp">Change Password</a>
+          <a class="dropdown-item" href="user-managingvehicle.jsp">Vehicle Status & Report</a>
+          <a class="dropdown-item" href="index.jsp">Logout</a>
+        </div>
+    	</li>
+      </ul>
+      </div>
+      </div>
+	</nav>
+	<%
+	if (session.getAttribute("uname") != null && session.getAttribute("uname") != "") {
+	%>
+
+	<div class="header-text"><center><font size=30 family="cursive" color="white">Manage Vehicle</font></center></div>
+	
+	<form action="ViewIncomingOwnVehicleDetails" method="post">
+	<strong class="card-title">View Incoming Vehicle</strong>
+			<div class="card-body">
+			
+			<%
+				String parkingNo=request.getParameter("parkingNo");
+				System.out.println("Parking No       "+parkingNo);
+				Connection con = DatabaseConnection.getConnection();
+				Statement statement = con.createStatement();
+				ResultSet resultset = statement.executeQuery("select * from tblvehicle where OwnerName='" + session.getAttribute("fullName") + "' and ParkingNumber='"+parkingNo+"' ");
+				while (resultset.next()) {
+			%>
+			<table border="1" class="table table-bordered mg-b-0" style="color:white">
+
+								<tr>
+									<th>Parking Number</th>
+									<td><%=resultset.getString(2)%></td>
+								</tr>
+								<tr>
+									<th>Vehicle Category</th>
+									<td><%=resultset.getString(3)%></td>
+								</tr>
+								<tr>
+									<th>Vehicle Company Name</th>
+									<td><%=resultset.getString(4)%></td>
+								</tr>
+								<tr>
+									<th>Registration Number</th>
+									<td><%=resultset.getString(5)%></td>
+								</tr>
+								
+								<tr>
+									<th>Owner Name</th>
+									<td><%=resultset.getString(6)%></td>
+								</tr>
+								<tr>
+									<th>Owner Contact Number</th>
+									<td><%=resultset.getString(7)%></td>
+								</tr>
+								<tr>
+									<th>In Time</th>
+									<td><%=resultset.getString(8)%></td>
+								</tr>
+								<tr>
+								
+									<th>Out Time</th>
+									<%
+										if (resultset.getString(12).equals("")) {
+
+												} else {
+									%>
+									<td><%=resultset.getString(9)%></td>
+									<%
+										}
+									%>
+								</tr>
+								<tr>
+									<th>Status</th>
+									<td>
+										<%
+											if (resultset.getString(12).equals("")) {
+										%>Vehicle In<%
+											}
+													if (resultset.getString(12).equals("Out")) {
+										%>Vehicle Out<%
+											}
+										%>
+									</td>
+								</tr>
+
+							</table>
+							
+						</div>
+						</form>
+						<table class="table mb-0" style="color:white">
+							<%
+								if (resultset.getString(12).equals("")) {
+							%>
+						
+							<tr>
+								<th>Remark :</th>
+								<td><textarea name="remark" placeholder="" rows="12"
+										cols="14" class="form-control" required="true"></textarea></td>
+							</tr>
+							<tr>
+								<th>Status :</th>
+								<td><select name="status" class="form-control"
+									required="true">
+										<option value="Out">Outgoing Vehicle</option>
+								</select></td>
+							</tr>
+							<tr>
+								
+								<td>
+								<p style="text-align: center;">
+									<button type="submit" class="btn btn-primary btn-sm"
+										name="submit">Update</button>
+									</p>
+								</td>
+							</tr>
+					
+					</table>
+					<%
+						} else {
+					%>
+					<table border="1" class="table table-bordered mg-b-0" style="color:white">
+						<tr>
+							<th>Remark</th>
+							<td><%=resultset.getString(11)%></td>
+						</tr>
+						
+						<tr>
+							<th>Parking Fee</th>
+							<td><%=resultset.getString(10)%></td>
+						</tr>
+						<%
+							}
+						%>
+					</table>
+
+					<%
+						}
+					%>
+
+
+<%
+		} else {
+			response.sendRedirect("user-login.jsp");
+		}
+	%>
+
+</body>
+</html>
+

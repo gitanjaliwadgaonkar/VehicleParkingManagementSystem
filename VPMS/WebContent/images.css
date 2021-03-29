@@ -1,0 +1,11 @@
+
+.row > .column {
+  padding: 0 8px;
+  padding-top:50px;
+}
+
+.column {
+  float: left;
+  width: 25%;
+  height:25%;
+}
